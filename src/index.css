@@ -1,0 +1,258 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base layer improvements */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased bg-white text-slate-900;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold text-dark;
+    line-height: 1.2;
+  }
+
+  h1 { @apply text-4xl sm:text-5xl lg:text-6xl; }
+  h2 { @apply text-3xl sm:text-4xl lg:text-5xl; }
+  h3 { @apply text-2xl sm:text-3xl lg:text-4xl; }
+  h4 { @apply text-xl sm:text-2xl lg:text-3xl; }
+  h5 { @apply text-lg sm:text-xl lg:text-2xl; }
+  h6 { @apply text-base sm:text-lg lg:text-xl; }
+
+  p {
+    @apply font-body text-slate-700 leading-relaxed;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  button {
+    @apply transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  input, textarea, select {
+    @apply font-body text-slate-900 placeholder-slate-500;
+  }
+}
+
+/* Component layer */
+@layer components {
+  /* Enhanced mesh background with better colors */
+  .mesh-bg {
+    @apply relative overflow-hidden;
+    background: linear-gradient(135deg, #f8fafc 0%, #e8f5e9 50%, #f0f9ff 100%);
+  }
+
+  .mesh-bg::before {
+    content: '';
+    @apply absolute inset-0 pointer-events-none;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(46, 125, 50, 0.08), transparent 45%),
+      radial-gradient(circle at 80% 20%, rgba(76, 175, 80, 0.06), transparent 50%),
+      radial-gradient(circle at 30% 80%, rgba(255, 143, 0, 0.04), transparent 55%);
+    filter: blur(12px);
+    opacity: 0.8;
+  }
+
+  .mesh-bg::after {
+    content: '';
+    @apply absolute inset-0 pointer-events-none;
+    background:
+      radial-gradient(circle at 70% 75%, rgba(255, 143, 0, 0.03), transparent 50%),
+      radial-gradient(circle at 25% 55%, rgba(46, 125, 50, 0.05), transparent 55%);
+    filter: blur(18px);
+    opacity: 0.6;
+  }
+
+  .mesh-bg > * {
+    @apply relative z-10;
+  }
+
+  /* Enhanced button styles */
+  .btn-primary {
+    @apply px-6 py-3 rounded-full bg-primary text-white font-display font-semibold hover:bg-primary-light hover:scale-[1.02] hover:brightness-110 transition-all duration-200 focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-lg hover:shadow-xl;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 rounded-full border-2 border-primary text-primary font-display font-semibold hover:bg-primary hover:text-white hover:scale-[1.02] transition-all duration-200 focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  }
+
+  .btn-outline {
+    @apply px-6 py-3 rounded-full border border-slate-300 text-slate-700 font-display font-semibold hover:border-primary hover:text-primary hover:scale-[1.02] transition-all duration-200 focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  }
+
+  /* Card components */
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-lg transition-shadow duration-300;
+  }
+
+  .card-hover {
+    @apply bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer;
+  }
+
+  /* Input styles */
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-display font-semibold;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary-pale text-primary;
+  }
+
+  .badge-accent {
+    @apply badge bg-orange-100 text-accent;
+  }
+
+  /* Section spacing */
+  .section {
+    @apply py-16 lg:py-24;
+  }
+
+  .section-sm {
+    @apply py-8 lg:py-12;
+  }
+
+  .section-lg {
+    @apply py-20 lg:py-32;
+  }
+
+  /* Container */
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Text gradients */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+
+  /* Loading states */
+  .skeleton {
+    @apply animate-pulse bg-slate-200 rounded;
+  }
+}
+
+/* Utility layer */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Safe area utilities for mobile */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Glass morphism */
+  .glass {
+    @apply bg-white/80 backdrop-blur-md border border-white/20;
+  }
+
+  /* Focus visible */
+  .focus-visible {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  }
+}
+
+@keyframes agriFloat {
+  0% {
+    transform: translateY(-8px);
+  }
+  50% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-8px);
+  }
+}
+
+.agri-float {
+  animation: agriFloat 3s infinite ease-in-out;
+}
+
+@keyframes modalFadeScaleIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+}
+
+.modal-in {
+  animation: modalFadeScaleIn 180ms ease-out both;
+}
+
+/* Additional animations for better UX */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in-up {
+  animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full hover:bg-slate-400;
+}
+
+/* Selection styling */
+::selection {
+  @apply bg-primary/20 text-primary;
+}
+
+::-moz-selection {
+  @apply bg-primary/20 text-primary;
+}
+
