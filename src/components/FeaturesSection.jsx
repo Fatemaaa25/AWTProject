@@ -1,8 +1,11 @@
+import { Link } from 'react-router-dom'
+
 const features = [
   {
     emoji: '🌱',
     title: 'Smart Crop Recommendations',
-    desc: 'Suggests best crops based on your soil type, location, and climate patterns.'
+    desc: 'Suggests best crops based on your soil type, location, and climate patterns.',
+    to: '/smart-recommendations'
   },
   {
     emoji: '💰',
@@ -12,7 +15,8 @@ const features = [
   {
     emoji: '🌦️',
     title: 'Weather Insights',
-    desc: 'Real-time weather data with farming-specific alerts and advice.'
+    desc: 'Real-time weather data with farming-specific alerts and advice.',
+    to: '/weather-insights'
   },
   {
     emoji: '📊',
@@ -35,23 +39,27 @@ export default function FeaturesSection() {
         </h2>
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((f) => (
-            <div
-              key={f.title}
-              className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-            >
-              <div className="w-fit rounded-xl bg-primary-pale p-3">
-                <span className="text-3xl" aria-hidden="true">
-                  {f.emoji}
-                </span>
-              </div>
+          {features.map((f) => {
+            const CardComponent = f.to ? Link : 'div'
+            return (
+              <CardComponent
+                key={f.title}
+                to={f.to}
+                className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 block"
+              >
+                <div className="w-fit rounded-xl bg-primary-pale p-3">
+                  <span className="text-3xl" aria-hidden="true">
+                    {f.emoji}
+                  </span>
+                </div>
 
-              <h3 className="mt-5 font-display font-bold text-xl text-dark">
-                {f.title}
-              </h3>
-              <p className="mt-3 text-slate-700 font-body">{f.desc}</p>
-            </div>
-          ))}
+                <h3 className="mt-5 font-display font-bold text-xl text-dark">
+                  {f.title}
+                </h3>
+                <p className="mt-3 text-slate-700 font-body">{f.desc}</p>
+              </CardComponent>
+            )
+          })}
         </div>
       </div>
     </section>

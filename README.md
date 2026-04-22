@@ -59,6 +59,10 @@ A full-stack web application for smart farming with crop recommendations, weathe
      ```
      MONGODB_URI=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/your-database?retryWrites=true&w=majority
      ```
+    - Add your Groq API key for smart recommendations:
+       ```
+       GROQ_API_KEY=your-groq-api-key
+       ```
    - Update `JWT_SECRET` with a secure key for production
 
 ### Running the Application
@@ -89,6 +93,7 @@ npm run dev
 
 #### Features
 - `POST /api/recommendations` - Get crop recommendations (protected)
+- `POST /api/smart-recommendations` - LLM-powered crop recommendations from Groq
 - `GET /api/weather` - Get weather insights (protected)
 - `GET /api/health` - Health check endpoint
 

@@ -23,10 +23,8 @@ export const registerUser = (data) => api.post('/auth/register', data)
 export const getCropRecommendations = (farmData) =>
   api.post('/recommendations', farmData)
 
-export const getWeatherInsights = (location) => {
-  const { lat, lon } = location || {}
-  return api.get(`/weather`, {
-    params: { lat, lon }
-  })
-}
+export const getSmartRecommendations = (farmData) =>
+  api.post('/smart-recommendations', farmData)
+
+export const getWeatherInsights = (payload) => api.post('/weather', payload)
 

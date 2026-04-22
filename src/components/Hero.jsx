@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { Link } from 'react-router-dom'
 
 export default function Hero({ onOpenSignup }) {
   const scrollToHowItWorks = useCallback(() => {
@@ -27,6 +28,12 @@ export default function Hero({ onOpenSignup }) {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              <Link
+                to="/smart-recommendations"
+                className="btn-secondary text-lg py-4 text-center focus-visible"
+              >
+                Get Smart Recommendations
+              </Link>
               <button
                 type="button"
                 onClick={onOpenSignup}
