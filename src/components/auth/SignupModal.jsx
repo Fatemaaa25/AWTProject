@@ -42,7 +42,7 @@ export default function SignupModal({ isOpen, onClose, onOpenLogin }) {
 
     try {
       const res = await registerUser({
-        fullName,
+        name: fullName,
         email,
         password,
         role
@@ -55,11 +55,9 @@ export default function SignupModal({ isOpen, onClose, onOpenLogin }) {
       }
       onClose?.()
     } catch (err) {
-      setTimeout(() => {
-        toast.success('Account created successfully!')
-        login({ name: fullName, email }, 'mock_token')
-        onClose?.()
-      }, 900)
+      console.error('Registration error:', err)
+      const errorMessage = err?.response?.data?.error || err?.message || 'Registration failed. Please try again.'
+      toast.error(errorMessage)
     }
   }
 

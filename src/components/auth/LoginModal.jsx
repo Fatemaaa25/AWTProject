@@ -29,12 +29,9 @@ export default function LoginModal({ isOpen, onClose, onOpenSignup }) {
       toast.success('Login successful!')
       onClose?.()
     } catch (err) {
-      // Backend may not be ready yet; mock success for UI continuity.
-      setTimeout(() => {
-        login({ email }, 'mock_token')
-        toast.success('Login successful!')
-        onClose?.()
-      }, 800)
+      console.error('Login error:', err)
+      const errorMessage = err?.response?.data?.error || err?.message || 'Login failed. Please check your credentials.'
+      toast.error(errorMessage)
     }
   }
 

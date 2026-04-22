@@ -92,6 +92,7 @@ const authenticateToken = (req, res, next) => {
 
 // Routes
 app.post('/api/auth/register', async (req, res) => {
+  console.log('Registration request received:', req.body)
   try {
     const { name, email, password } = req.body
 
