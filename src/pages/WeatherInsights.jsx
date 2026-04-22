@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import Navbar from '../components/Navbar.jsx'
-import { getWeatherInsights } from '../services/api.js'
+import { getWeatherInsights, getFarmData } from '../services/api.js'
 
 const cropOptions = ['Rice', 'Wheat', 'Maize', 'Cotton', 'Sugarcane', 'Groundnut', 'Soybean', 'Millets']
 
@@ -87,6 +87,25 @@ export default function WeatherInsights() {
   const [result, setResult] = useState(null)
 
   const insightSections = parseAiInsights(result?.insights)
+
+  useEffect(() => {
+    loadFarmData()
+  }, [])
+
+  const loadFarmData = async () => {
+    try {
+      const response = await getFarmData()
+      if (response.data.farmData) {
+        const farmData = response.data.farmData
+        setLocation(farmData.location || '')
+        if (farmData.preferredCrop) {
+          setSelectedCrops([farmData.preferredCrop])
+        }
+      }
+    } catch (error) {
+      console.log('No saved farm data found, using defaults')
+    }
+  }
 
   const toggleCrop = (crop) => {
     setSelectedCrops((prev) =>

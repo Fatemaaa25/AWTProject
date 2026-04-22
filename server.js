@@ -47,6 +47,75 @@ const userSchema = new mongoose.Schema({
 // User model
 const User = mongoose.model('User', userSchema)
 
+// Farm Data Schema
+const farmDataSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  season: {
+    type: String,
+    enum: ['Kharif', 'Rabi', 'Summer', 'Year-round'],
+    required: true
+  },
+  soilType: {
+    type: String,
+    enum: ['Black soil', 'Red soil', 'Sandy soil', 'Clay soil', 'Loamy soil', 'Alluvial soil'],
+    required: true
+  },
+  waterAvailability: {
+    type: String,
+    enum: ['Low', 'Medium', 'High', 'Rainfed only', 'Borewell', 'Canal irrigation', 'Drip irrigation'],
+    required: true
+  },
+  budget: {
+    type: String,
+    enum: ['Low', 'Medium', 'High'],
+    required: true
+  },
+  goal: {
+    type: String,
+    enum: ['High profit', 'Low risk', 'Fast harvest', 'Household use', 'Fodder'],
+    required: true
+  },
+  preference: {
+    type: String,
+    enum: ['Organic', 'Chemical', 'Mixed'],
+    required: true
+  },
+  rainfall: {
+    type: String,
+    enum: ['Low rainfall', 'Moderate', 'Heavy rainfall'],
+    required: true
+  },
+  temperature: {
+    type: String,
+    enum: ['Hot', 'Moderate', 'Cold'],
+    required: true
+  },
+  location: {
+    type: String,
+    required: true
+  },
+  preferredCrop: {
+    type: String,
+    enum: ['Rice', 'Wheat', 'Maize', 'Cotton', 'Sugarcane', 'Groundnut', 'Soybean', 'Millets'],
+    required: false
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+})
+
+// Farm Data model
+const FarmData = mongoose.model('FarmData', farmDataSchema)
+
 // MongoDB connection
 const connectDB = async () => {
   try {
@@ -384,7 +453,7 @@ app.post('/api/smart-recommendations', async (req, res) => {
   try {
     if (!groq) {
       return res.status(500).json({
-        error: 'Missing GROQ_API_KEY in server environment variables'
+        error: 'Missing GROQ_API_KEY in server environment variables. Please add your GROQ API key to the .env file.'
       })
     }
 
@@ -524,6 +593,176 @@ app.post('/api/weather', async (req, res) => {
     return res.status(500).json({
       error: 'Failed to generate weather insights. Please try again.'
     })
+  }
+})
+
+// Seasonal crop calendar endpoint for structured seasonal crop recommendations
+app.post('/api/seasonal-calendar', async (req, res) => {
+  try {
+    if (!groq) {
+      return res.status(500).json({
+        error: 'Missing GROQ_API_KEY in server environment variables. Please add your GROQ API key to the .env file.'
+      })
+    }
+
+    const { location } = req.body
+    if (!location) {
+      return res.status(400).json({ error: 'Location is required' })
+    }
+
+    const prompt = `You are an agricultural expert providing seasonal crop recommendations for ${location}.
+
+Please provide a structured JSON response with crop recommendations for all 4 seasons. For each season, recommend 3-5 suitable crops with the following details:
+
+Required JSON format:
+{
+  "seasons": {
+    "Kharif": {
+      "crops": [
+        {
+          "name": "Rice",
+          "emoji": "??",
+          "duration": 120,
+          "yield": "4.5",
+          "suitability": 85
+        }
+      ]
+    },
+    "Rabi": {
+      "crops": [
+        {
+          "name": "Wheat", 
+          "emoji": "??",
+          "duration": 110,
+          "yield": "3.2",
+          "suitability": 78
+        }
+      ]
+    },
+    "Summer": {
+      "crops": [
+        {
+          "name": "Maize",
+          "emoji": "??", 
+          "duration": 90,
+          "yield": "2.8",
+          "suitability": 72
+        }
+      ]
+    },
+    "Year-round": {
+      "crops": [
+        {
+          "name": "Sugarcane",
+          "emoji": "??",
+          "duration": 365,
+          "yield": "70",
+          "suitability": 88
+        }
+      ]
+    }
+  }
+}
+
+Important guidelines:
+- Duration should be in days (integer)
+- Yield should be in tons/hectare (decimal)
+- Suitability should be 0-100 (integer)
+- Use appropriate emojis for each crop
+- Consider the local climate, soil conditions, and traditional farming practices for ${location}
+- Focus on crops that are actually suitable for the region
+
+Return ONLY the JSON object, no additional text.`
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      model: 'openai/gpt-oss-120b',
+      temperature: 0.4,
+      max_completion_tokens: 1000,
+      top_p: 1,
+      stream: false,
+      reasoning_effort: 'low'
+    })
+
+    const response = chatCompletion.choices[0]?.message?.content
+    
+    if (!response) {
+      return res.status(502).json({
+        error: 'Model returned empty response. Please try again.'
+      })
+    }
+
+    let parsedData
+    try {
+      // Try to parse the response as JSON
+      parsedData = JSON.parse(response)
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError)
+      return res.status(502).json({
+        error: 'Model returned invalid JSON format. Please try again.'
+      })
+    }
+
+    return res.json({
+      success: true,
+      data: parsedData,
+      location: location
+    })
+  } catch (error) {
+    console.error('Seasonal calendar error:', error)
+    return res.status(500).json({
+      error: 'Failed to generate seasonal crop recommendations. Please try again shortly.'
+    })
+  }
+})
+
+// Farm Data API endpoints
+app.post('/api/farm-data', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id
+    const farmData = { ...req.body, userId }
+    
+    // Check if user already has farm data
+    const existingData = await FarmData.findOne({ userId })
+    
+    if (existingData) {
+      // Update existing data
+      const updatedData = await FarmData.findOneAndUpdate(
+        { userId },
+        { ...farmData, updatedAt: new Date() },
+        { new: true, runValidators: true }
+      )
+      res.json({ message: 'Farm data updated successfully', farmData: updatedData })
+    } else {
+      // Create new farm data
+      const newFarmData = new FarmData(farmData)
+      await newFarmData.save()
+      res.status(201).json({ message: 'Farm data saved successfully', farmData: newFarmData })
+    }
+  } catch (error) {
+    console.error('Save farm data error:', error)
+    res.status(500).json({ error: 'Failed to save farm data' })
+  }
+})
+
+app.get('/api/farm-data', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id
+    const farmData = await FarmData.findOne({ userId })
+    
+    if (!farmData) {
+      return res.status(404).json({ error: 'No farm data found' })
+    }
+    
+    res.json({ farmData })
+  } catch (error) {
+    console.error('Get farm data error:', error)
+    res.status(500).json({ error: 'Failed to retrieve farm data' })
   }
 })
 

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Eye, EyeOff, X } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../../services/api.js'
 import { useAuth } from '../../hooks/useAuth.js'
 
 export default function LoginModal({ isOpen, onClose, onOpenSignup }) {
   const { login } = useAuth()
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -28,6 +30,7 @@ export default function LoginModal({ isOpen, onClose, onOpenSignup }) {
       login(data.user || { email }, data.token || 'mock_token')
       toast.success('Login successful!')
       onClose?.()
+      navigate('/dashboard')
     } catch (err) {
       console.error('Login error:', err)
       const errorMessage = err?.response?.data?.error || err?.message || 'Login failed. Please check your credentials.'

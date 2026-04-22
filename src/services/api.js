@@ -28,3 +28,17 @@ export const getSmartRecommendations = (farmData) =>
 
 export const getWeatherInsights = (payload) => api.post('/weather', payload)
 
+export const getSeasonalCropCalendar = async (location) => {
+  try {
+    const response = await api.post('/seasonal-calendar', { location })
+    return response.data
+  } catch (error) {
+    console.error('Seasonal calendar error:', error)
+    throw error
+  }
+}
+
+export const saveFarmData = (farmData) => api.post('/farm-data', farmData)
+
+export const getFarmData = () => api.get('/farm-data')
+

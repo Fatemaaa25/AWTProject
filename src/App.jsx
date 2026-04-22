@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import AuthProvider from './context/AuthContext.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
 import LandingPage from './pages/LandingPage.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import SmartRecommendations from './pages/SmartRecommendations.jsx'
@@ -13,9 +14,21 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/smart-recommendations" element={<SmartRecommendations />} />
-          <Route path="/weather-insights" element={<WeatherInsights />} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/smart-recommendations" element={
+            <ProtectedRoute>
+              <SmartRecommendations />
+            </ProtectedRoute>
+          } />
+          <Route path="/weather-insights" element={
+            <ProtectedRoute>
+              <WeatherInsights />
+            </ProtectedRoute>
+          } />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

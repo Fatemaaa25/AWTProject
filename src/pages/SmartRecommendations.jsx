@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import Navbar from '../components/Navbar.jsx'
-import { getSmartRecommendations } from '../services/api.js'
+import { getSmartRecommendations, getFarmData } from '../services/api.js'
 
 const seasonOptions = ['Kharif', 'Rabi', 'Summer', 'Year-round']
 const soilTypeOptions = [
@@ -54,6 +54,33 @@ export default function SmartRecommendations() {
   const [result, setResult] = useState(null)
 
   const payload = useMemo(() => ({ ...form }), [form])
+
+  useEffect(() => {
+    loadFarmData()
+  }, [])
+
+  const loadFarmData = async () => {
+    try {
+      const response = await getFarmData()
+      if (response.data.farmData) {
+        const farmData = response.data.farmData
+        setForm(prev => ({
+          ...prev,
+          location: farmData.location || '',
+          season: farmData.season || 'Kharif',
+          soilType: farmData.soilType || 'Loamy soil',
+          waterAvailability: farmData.waterAvailability || 'Medium',
+          budget: farmData.budget || 'Medium',
+          farmingPreference: farmData.preference || 'Mixed',
+          expectedGoal: farmData.goal || 'High profit',
+          rainfall: farmData.rainfall || 'Moderate',
+          temperature: farmData.temperature || 'Moderate'
+        }))
+      }
+    } catch (error) {
+      console.log('No saved farm data found, using defaults')
+    }
+  }
 
   const updateField = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }))
